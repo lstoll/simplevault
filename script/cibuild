@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+echo '--> Installing Dependencies'
+go get github.com/mitchellh/gox
+
+echo '--> Building'
+go build
+# go test -v
+echo '--> Cross compiling'
+gox -osarch="darwin/amd64 linux/386 linux/amd64 linux/arm" -output="out/{{.Dir}}_{{.OS}}_{{.Arch}}"
