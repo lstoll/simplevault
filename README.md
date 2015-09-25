@@ -25,3 +25,18 @@ The following environment variables are expected to be set
 ## Caveats
 * No credential rolling. If you're compromised, delete and re-upload
 * Can't choose non-master password. These are randomly generated
+
+## Artifacts
+
+Builds are make for Darwin/64, Linux/i386, Linux/x86_64 and arm.
+
+You can fetch binaries from:
+
+* Linux/arm: http://cdn.lstoll.net/artifacts/simplevault/simplevault_linux_arm
+* Linux/386: http://cdn.lstoll.net/artifacts/simplevault/simplevault_linux_386
+* Linux/amd64: http://cdn.lstoll.net/artifacts/simplevault/simplevault_linux_amd64
+* Darwin/amd64: http://cdn.lstoll.net/artifacts/simplevault/simplevault_darwin_amd64
+
+Or with shell magic like:
+
+`curl -so /tmp/simplevault http://cdn.lstoll.net/artifacts/simplevault/simplevault_$(uname | tr A-Z a-z)_$(uname -m | sed 's/^..86$$/386/; s/^.86$$/386/; s/x86_64/amd64/; s/arm.*/arm/') && chmod +x /tmp/simplevault`
