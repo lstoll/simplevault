@@ -1,4 +1,17 @@
 language: go
 go:
-  - 1.5
+- 1.5
 script: script/cibuild
+deploy:
+  provider: s3
+  access_key_id: AKIAI4OFQ43EG5AN3QVA
+  bucket: s3.lstoll.net
+  local_dir: out
+  upload_dir: artifacts/simplevault
+  acl: public_read
+  skip_cleanup: true
+  on:
+    repo: lstoll/simplevault
+    branch: master
+  secret_access_key:
+    secure: k8zfOcLnoLaDiwthXDiuFcQRtMmY0xY2jfub73p9dsg1mb+B04fA+uMSu6BcgDrtHp5MnDAEEpK0UbvB+22i6f9TMlrvZV5ZjRtQC+MF7ovetIdalF610FLbDbni2kykuVGbUFMOaTlbKzOE+yNpFA3W87PCXhbzfUIjzoEHmy4pKoBP1Uvxz3md8XOQeyuqtjIRwOMf45j2nm9/FvWVNasZoq1r/RgLb6Ti/QFoD4B3RE9j8N/GbBbalyGtSl/09OxR0Rjw/S32ulkvl+f0tKZ5NsdrnDy3uL62QpHE/A0aIbFFExTsK7iVEk4m1OtUjeAibhb2PZ+xz0TOp5PaDgiaeos/R7kiD3smfe+CwL+7rhY6KfWZZ2DPglri7sq8Aor7t5mZnRmwvc89msAk/9yw3n8kmTAqCXx6L8RKy+6dPmT9Sl6s/jQps/6r96xIt+fj1UW6TNPxR/BRFAKOe9FDJ2oJ9uGnWomgDR7rq+4PYTFaWQst4703W2Ym3lIc84FmYaQMIbfB5EIGuOisjYNEtuXiK65RuHKt4I/m3HPh2UZ2JhhKtL12col5N7o2Uiq/MqQ8oOB1yx3BXWeWgWlsa/l3Wut/mmsU16nDYKl/tYApGWoRdkSMeQxtxiY36lkdl3ukY+KlOlz3dgWMwLLUYtdSgT9PJtbIHf8fRQY=
