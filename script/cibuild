@@ -8,5 +8,9 @@ go get github.com/mitchellh/gox
 echo '--> Building'
 go build
 # go test -v
+
+echo '--> Building cross-compilation toolchain'
+gox -build-toolchain -osarch="linux/amd64 darwin/amd64 linux/386"
+
 echo '--> Cross compiling'
 gox -osarch="darwin/amd64 linux/386 linux/amd64 linux/arm" -output="out/{{.Dir}}_{{.OS}}_{{.Arch}}"

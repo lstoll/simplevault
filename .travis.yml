@@ -1,2 +1,4 @@
 language: go
+go:
+  - latest
 script: script/cibuild
