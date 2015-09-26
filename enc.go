@@ -11,6 +11,13 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
+type Enc interface {
+	Encrypt([]byte, []byte) ([]byte, error)
+	Decrypt([]byte, []byte) ([]byte, error)
+}
+
+type enc struct{}
+
 const (
 	KeySize   = 16
 	SaltSize  = 32
@@ -18,18 +25,22 @@ const (
 )
 const Overhead = SaltSize + NonceSize
 
-func Encrypt(pass, message []byte) ([]byte, error) {
-	salt, err := randBytes(SaltSize)
+func NewEnc() Enc {
+	return &enc{}
+}
+
+func (e *enc) Encrypt(pass, message []byte) ([]byte, error) {
+	salt, err := e.randBytes(SaltSize)
 	if err != nil {
 		return nil, err
 	}
 
-	key, err := deriveKey(pass, salt)
+	key, err := e.deriveKey(pass, salt)
 	if err != nil {
 		return nil, err
 	}
 
-	out, err := aesEncrypt(key, message)
+	out, err := e.aesEncrypt(key, message)
 	if err != nil {
 		return nil, err
 	}
@@ -38,17 +49,17 @@ func Encrypt(pass, message []byte) ([]byte, error) {
 	return out, nil
 }
 
-func Decrypt(pass, message []byte) ([]byte, error) {
+func (e *enc) Decrypt(pass, message []byte) ([]byte, error) {
 	if len(message) < Overhead {
 		return nil, errors.New("Message is less than overhead")
 	}
 
-	key, err := deriveKey(pass, message[:SaltSize])
+	key, err := e.deriveKey(pass, message[:SaltSize])
 	if err != nil {
 		return nil, err
 	}
 
-	out, err := aesDecrypt(key, message[SaltSize:])
+	out, err := e.aesDecrypt(key, message[SaltSize:])
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +68,7 @@ func Decrypt(pass, message []byte) ([]byte, error) {
 }
 
 // deriveKey generates a new NaCl key from a passphrase and salt.
-func deriveKey(pass, salt []byte) ([]byte, error) {
+func (e *enc) deriveKey(pass, salt []byte) ([]byte, error) {
 	var aesKey = make([]byte, KeySize)
 	key, err := scrypt.Key(pass, salt, 1048576, 8, 1, KeySize)
 	if err != nil {
@@ -69,7 +80,7 @@ func deriveKey(pass, salt []byte) ([]byte, error) {
 }
 
 // GenerateNonce creates a new random nonce.
-func generateNonce() ([]byte, error) {
+func (e *enc) generateNonce() ([]byte, error) {
 	nonce := make([]byte, NonceSize)
 	_, err := io.ReadFull(rand.Reader, nonce[:])
 	if err != nil {
@@ -80,7 +91,7 @@ func generateNonce() ([]byte, error) {
 }
 
 // Encrypt secures a message using AES-GCM.
-func aesEncrypt(key, message []byte) ([]byte, error) {
+func (e *enc) aesEncrypt(key, message []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -91,7 +102,7 @@ func aesEncrypt(key, message []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	nonce, err := generateNonce()
+	nonce, err := e.generateNonce()
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +111,7 @@ func aesEncrypt(key, message []byte) ([]byte, error) {
 	return out, nil
 }
 
-func aesDecrypt(key, message []byte) ([]byte, error) {
+func (e *enc) aesDecrypt(key, message []byte) ([]byte, error) {
 	if len(message) <= NonceSize {
 		return nil, errors.New("Message is too short")
 	}
@@ -126,7 +137,7 @@ func aesDecrypt(key, message []byte) ([]byte, error) {
 	return out, nil
 }
 
-func randBytes(n int) ([]byte, error) {
+func (e *enc) randBytes(n int) ([]byte, error) {
 	r := make([]byte, n)
 	_, err := io.ReadFull(rand.Reader, r)
 	if err != nil {
