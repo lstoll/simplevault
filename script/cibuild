@@ -4,6 +4,7 @@ set -e
 
 echo '--> Installing Dependencies'
 go get github.com/mitchellh/gox
+go get
 
 echo '--> Building'
 go build
