@@ -104,8 +104,6 @@ func (v *vault) putEncryptedData(key, pass string, data []byte) error {
 }
 
 func (v *vault) getEncryptedData(key, pass string) ([]byte, error) {
-	fmt.Printf("getting data for %s\n", key)
-
 	item, err := v.S3Client.Get(key)
 	if err != nil {
 		return nil, err
